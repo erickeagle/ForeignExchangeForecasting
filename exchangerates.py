@@ -75,24 +75,15 @@ df = df.rename(columns={'Units per HKD': 'y', 'Date': 'ds'})
 df.head(5)
 
 
-
-
 # to save a copy of the original data..you'll see why shortly. 
 df['y_orig'] = df['y'] 
 # log-transform of y
 df['y'] = np.log(df['y'])
-
 #instantiate Prophet
 model = Prophet() 
 model.fit(df)
-
-
-
-
 future_data = model.make_future_dataframe(periods=10, freq = 'D')  #dropdown   
 future_data.tail()
-
-
 forecast_data = model.predict(future_data)
 forecast_data[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(5)
 

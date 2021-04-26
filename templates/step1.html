@@ -86,19 +86,19 @@ div#loading {
 		  </div>
 
 		<br>  
-		<form action="http://localhost:5000" method="POST" action="/submit" enctype="multipart/form-data">
+		<form  method="POST" action="/submit" enctype="multipart/form-data">
 			<div class="form-group  purple-border">
-				<label for="comment" class="heading">Frequeny</label>
+				<label for="comment" class="heading">Frequency</label>
 				<p class="form-control" autofocus>
 
-				<input type="radio" name="options" id="option1"> Days
-				<input type="radio" name="options" id="option2"> Months
-				<input type="radio" name="options" id="option3"> Years
+				<input type="radio" name="options" id="d" value="D"> Days
+				<input type="radio" name="options" id="m" value="M"> Months
+				<input type="radio" name="options" id="y" value="Y"> Years
 				</p>
 			</div>
 			<div class="form-group  purple-border">
 				<label for="comment" class="heading">Parameter</label>
-				<textarea class="form-control" rows="2" id="query5" name="query5" rows="2" cols="5" autofocus>{{parameter}}</textarea>
+				<textarea class="form-control" rows="2" id="query5" name="parameter" rows="2" cols="5" autofocus>{{parameter}}</textarea>
 		  </div>
 				<p><input type=submit value=Forecast>Forecast</p>
 		</form>

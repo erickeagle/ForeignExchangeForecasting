@@ -3,26 +3,19 @@ from flask import Flask,render_template,redirect,request
 import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
-import itertools
+
 import matplotlib.pyplot as plt
 import numpy as np
 from fbprophet import Prophet
-from sklearn.metrics import mean_squared_error
+
 import warnings
 warnings.filterwarnings('ignore')
 from random import randint
 import plotly.graph_objs as go
 import plotly.offline as py
-
-
-
+from flask_socketio import SocketIO
 import datetime
 from datetime import timedelta, date
-
-from fbprophet import Prophet 
-import plotly.graph_objs as go
-import plotly.offline as py
-import numpy as np
 from fbprophet.plot import plot_plotly
 
 
@@ -67,6 +60,7 @@ print(price_day1,change_1,change_7,change_15,change_365)
 import os
 app = Flask("__name__")
 app.config["IMAGE_UPLOADS"] = "static/img/"
+socketio = SocketIO(app)
 @app.route('/')
 def hello():
     
@@ -83,39 +77,72 @@ def hello():
 def submit_data():
     
         
-      
-    s1=request.form['query1']
-    s2=request.form['query2']  
+    print("entered")
+    s1=request.form.getlist('options')[0]
+    s2=int(request.form['parameter'])
+    print(s1,s2)
+
+    df= inr_df.drop(['Currency', 'Name', 'HKD per unit'], axis=1)
+
+    df = df.rename(columns={'Units per HKD': 'y', 'Date': 'ds'})
+    #df['ds'] =  pd.to_datetime(df['ds'], format='%d/%m/%Y')
+    df.head(5)
+
+
+    # to save a copy of the original data..you'll see why shortly. 
+    df['y_orig'] = df['y'] 
+    # log-transform of y
+    df['y'] = np.log(df['y'])
+    #instantiate Prophet
+    model = Prophet() 
+    model.fit(df)
+    future_data = model.make_future_dataframe(periods=s2, freq = s1)  #dropdown   
+    future_data.tail()
+    forecast_data = model.predict(future_data)
+    forecast_data[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(5)
 
 
 
+    # make sure we save the original forecast data
+    forecast_data_orig = forecast_data 
+    forecast_data_orig['yhat'] = np.exp(forecast_data_orig['yhat'])
+    forecast_data_orig['yhat_lower'] = np.exp(forecast_data_orig['yhat_lower'])
+    forecast_data_orig['yhat_upper'] = np.exp(forecast_data_orig['yhat_upper'])
+    df['y_log']=df['y'] 
+    df['y']=df['y_orig']
+    final_df = pd.DataFrame(forecast_data_orig)
 
 
-
-
-
+    '''
+    actual_chart = go.Scatter(y=df["y_orig"], name= 'Actual')
+    predict_chart = go.Scatter(y=final_df["yhat"], name= 'Predicted')
+    predict_chart_upper = go.Scatter(y=final_df["yhat_upper"], name= 'Predicted Upper')
+    predict_chart_lower = go.Scatter(y=final_df["yhat_lower"], name= 'Predicted Lower')
+    '''  
     
     fig,ax=plt.subplots(nrows=1, ncols=1)
-    ax.plot(df["y_orig"],label="Actual")
-    ax.plot(final_df["yhat"],label="Predicted")
+    ax.plot(df["y_orig"], label= 'Actual')
+    ax.plot(final_df["yhat"], label= 'Predicted')
+    ax.plot(final_df["yhat_lower"], label= 'Predicted Lower')
+    ax.plot(final_df["yhat_upper"], label= 'Predicted Upper')
     ax.legend()
 
 
     plt.xticks(rotation=90)
-    plt.show()
+
     n=randint(0,1000000000000)
     n=str(n)
     fig.savefig(os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png'))  
     full_filename= os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png')                  
-        
-    #return 'nothing'
     
-    return render_template('step1.html',user_image = full_filename,tables=[final_df_1.to_html(classes='forecast')],titles=['na','forecast'],query1 = request.form['query1'],query2 = request.form['query2'],query3 = request.form['query3'])
-     
+    
+    return render_template("step1.html",user_image = full_filename,price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+
+
    
 
     
 if __name__ =="__main__":
 
-    app.run(debug=True)
+    socketio.run(app)
     
