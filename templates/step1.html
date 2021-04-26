@@ -53,43 +53,55 @@ div#loading {
 	  <div class="container" >
 		<div class="row">
 
-		  <form action="http://localhost:5000" method="POST" action="/submit_ts" enctype="multipart/form-data">
+		  
 		  	<div class="col-sm-9">
 			 <div class="form-group  purple-border">
 				  <label for="comment"  class="heading">Price for HKD 1</label>
-				  <p class="form-control" rows="2" id="query1" name="query1" rows="2" cols="5" autofocus>INR {{price_day1}}</p>
+				  <p class="form-control" rows="2" id="query1" name="query1" rows="3" cols="10" autofocus>INR{{price_day1}}</p>
 			</div>
 			
 			<div class="form-group  purple-border">
-				  <label for="comment"  class="heading">Enter the name of the feature you want to forecast on</label>
-				  <p class="form-control" rows="2" id="query2" name="query2" rows="2" cols="5" autofocus>{{change_1}}</p>
+				  <label for="comment"  class="heading">1Day change</label>
+				  <p class="form-control" rows="2" id="query2" name="query2" rows="3" cols="10" autofocus>{{change_1}}</p>
 			</div>
 		
 		
 			<div class="form-group  purple-border">
-				  <label for="comment" class="heading">Enter number of days to forecast</label>
-				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_7}}</p>
+				  <label for="comment" class="heading">7 Days Change</label>
+				  <p class="form-control" rows="2" id="query3" name="query3" rows="3" cols="10" autofocus>{{change_7}}</p>
 			</div>
 			<div class="form-group  purple-border">
-				  <label for="comment" class="heading">Enter number of days to forecast</label>
-				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_15}}</p>
+				  <label for="comment" class="heading">15 Days Change</label>
+				  <p class="form-control" rows="2" id="query4" name="query4" rows="3" cols="5" autofocus>{{change_15}}</p>
 			</div>
 			<div class="form-group  purple-border">
-				  <label for="comment" class="heading">Enter number of days to forecast</label>
-				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_365}}</p>
+				  <label for="comment" class="heading">1Year Change</label>
+				  <p class="form-control" rows="2" id="query5" name="query5" rows="2" cols="5" autofocus>{{change_365}}</p>
 			</div>
 	
 			
 
 			</div>
 			
-		  </form><br>
-		  <div id="loading" >
-		  	<br>
-  <p class="heading"> Please wait</p>
 		  </div>
-		  </div>
+
 		<br>  
+		<form action="http://localhost:5000" method="POST" action="/submit" enctype="multipart/form-data">
+			<div class="form-group  purple-border">
+				<label for="comment" class="heading">Frequeny</label>
+				<p class="form-control" autofocus>
+
+				<input type="radio" name="options" id="option1"> Days
+				<input type="radio" name="options" id="option2"> Months
+				<input type="radio" name="options" id="option3"> Years
+				</p>
+			</div>
+			<div class="form-group  purple-border">
+				<label for="comment" class="heading">Parameter</label>
+				<textarea class="form-control" rows="2" id="query5" name="query5" rows="2" cols="5" autofocus>{{parameter}}</textarea>
+		  </div>
+				<p><input type=submit value=Forecast>Forecast</p>
+		</form>
 		<div class=page>
  	
 

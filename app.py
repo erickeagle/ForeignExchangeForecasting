@@ -24,8 +24,6 @@ import plotly.graph_objs as go
 import plotly.offline as py
 import numpy as np
 from fbprophet.plot import plot_plotly
-import plotly.offline as py
-py.init_notebook_mode()
 
 
 def daterange(start_date, end_date):
@@ -47,7 +45,7 @@ inr_df.pop('Rate')
 inr_df.pop('Change')
 inr_df.head(5)
 inr_df = pd.concat([hist_df, inr_df], ignore_index=True)
-inr_df.plot(x='Date', y='Units per HKD', figsize=(12, 8)) 
+
 length=len(inr_df)
 data_day1=inr_df[length-1:]
 data_day2=inr_df[length-2:length-1]
@@ -73,7 +71,7 @@ app.config["IMAGE_UPLOADS"] = "static/img/"
 def hello():
     
     
-    return render_template("step1.html",price_day1,change_1,change_7,change_15,change_365)
+    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
 
 
 
@@ -81,7 +79,7 @@ def hello():
 
 
 
-@app.route('/',methods=['POST'])
+@app.route('/submit',methods=['POST'])
 def submit_data():
     
         
@@ -119,5 +117,5 @@ def submit_data():
     
 if __name__ =="__main__":
 
-    app.run()
+    app.run(debug=True)
     
