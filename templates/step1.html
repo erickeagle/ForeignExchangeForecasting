@@ -1,0 +1,101 @@
+<html>
+<head>
+	<title>Time series forecasting</title>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" >// <![CDATA[ 
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();       
+        }
+// ]]></script>
+<meta charset="utf-8" />
+<style>
+table.dataframe, .dataframe th, .dataframe td {
+  border: none;
+  border-bottom: 1px solid #C8C8C8;
+  border-collapse: collapse;
+  text-align:left;
+  padding: 10px;
+  margin-bottom: 40px;
+  font-size: 0.9em;
+  color: #FFFFFF;
+}
+	.heading { color: #FFFFFF;}  
+body {
+
+    padding:0px;
+    margin:20px;
+    background:url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/499416/demo-bg.jpg") ;
+    background-size:auto;
+    width:100vw;
+    height:100vh;
+    
+   
+}
+div#loading {
+ 
+    width: 1700px;
+    height: 35px;
+    display: none;
+    background: url('{{ url_for('static', filename='loading_bar.gif' ) }}') no-repeat;
+    cursor: wait;
+    
+  }
+
+</style>
+
+</head>
+   <body>
+      
+	  <div class="container" >
+		<div class="row">
+
+		  <form action="http://localhost:5000" method="POST" action="/submit_ts" enctype="multipart/form-data">
+		  	<div class="col-sm-9">
+			 <div class="form-group  purple-border">
+				  <label for="comment"  class="heading">Price for HKD 1</label>
+				  <p class="form-control" rows="2" id="query1" name="query1" rows="2" cols="5" autofocus>INR {{price_day1}}</p>
+			</div>
+			
+			<div class="form-group  purple-border">
+				  <label for="comment"  class="heading">Enter the name of the feature you want to forecast on</label>
+				  <p class="form-control" rows="2" id="query2" name="query2" rows="2" cols="5" autofocus>{{change_1}}</p>
+			</div>
+		
+		
+			<div class="form-group  purple-border">
+				  <label for="comment" class="heading">Enter number of days to forecast</label>
+				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_7}}</p>
+			</div>
+			<div class="form-group  purple-border">
+				  <label for="comment" class="heading">Enter number of days to forecast</label>
+				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_15}}</p>
+			</div>
+			<div class="form-group  purple-border">
+				  <label for="comment" class="heading">Enter number of days to forecast</label>
+				  <p class="form-control" rows="2" id="query3" name="query3" rows="2" cols="5" autofocus>{{change_365}}</p>
+			</div>
+	
+			
+
+			</div>
+			
+		  </form><br>
+		  <div id="loading" >
+		  	<br>
+  <p class="heading"> Please wait</p>
+		  </div>
+		  </div>
+		<br>  
+		<div class=page>
+ 	
+
+  	<br>
+  	<img src="{{ user_image }}" alt="User Image"/>
+	</div>
+	</div>		
+   </body>
+</html>

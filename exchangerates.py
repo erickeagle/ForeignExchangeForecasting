@@ -56,7 +56,7 @@ inr_df.head(5)
 
 inr_df = pd.concat([hist_df, inr_df], ignore_index=True)
 
-inr_df.plot(x='Date', y='Units per HKD', figsize=(12, 8))
+inr_df.plot(x='Date', y='Units per HKD', figsize=(12, 8)) 
 
 
 
@@ -89,7 +89,7 @@ model.fit(df)
 
 
 
-future_data = model.make_future_dataframe(periods=10, freq = 'D')
+future_data = model.make_future_dataframe(periods=10, freq = 'D')  #dropdown   
 future_data.tail()
 
 
