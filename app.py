@@ -63,31 +63,22 @@ print(price_day1,change_1,change_7,change_15,change_365)
 import os
 app = Flask("__name__")
 app.config["IMAGE_UPLOADS"] = "static/img/"
+app.config["Graph_UPLOADS"] = "static/graph/"
 socketio = SocketIO(app)
 @app.route('/')
 def hello():
 
-
-
-
-
-
-
-    fig,ax=plt.subplots(nrows=1, ncols=1)
-    ax.plot(inr_df["Date"],inr_df["Units per HKD"], label= 'Units per HKD')
-    
-    ax.legend()
-
-
-    plt.xticks(rotation=90)
-
-    n=randint(0,1000000000000)
-    n=str(n)
-    fig.savefig(os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png'))  
-    full_filename= os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png')    
     
     
-    return render_template("step1.html",user_image = full_filename,price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+
+    actual_chart = go.Scatter(y=inr_df["Units per HKD"], x=inr_df["Date"], name= 'Data')
+    py.plot([actual_chart],filename = os.path.join(app.config["Graph_UPLOADS"],'actual_graph.html') , auto_open=False)
+
+
+
+
+    
+    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
 
 
 
@@ -130,25 +121,12 @@ def submit_data():
     predict_chart_upper = go.Scatter(y=final_df["yhat_upper"], name= 'Predicted Upper')
     predict_chart_lower = go.Scatter(y=final_df["yhat_lower"], name= 'Predicted Lower')
 
-    py.plot([actual_chart, predict_chart, predict_chart_upper, predict_chart_lower],filename = '/static/graph/predict_graph.html', auto_open=False)
+    py.plot([actual_chart, predict_chart, predict_chart_upper, predict_chart_lower],filename =  os.path.join(app.config["Graph_UPLOADS"],'predict_graph.html'), auto_open=False)
 
 
-    fig,ax=plt.subplots(nrows=1, ncols=1)
-    ax.plot(df["y_orig"], label= 'Actual')
-    ax.plot(final_df["yhat"], label= 'Predicted')
-    ax.plot(final_df["yhat_lower"], label= 'Predicted Lower')
-    ax.plot(final_df["yhat_upper"], label= 'Predicted Upper')
-    ax.legend()
-
-    plt.xticks(rotation=90)
-
-    n=randint(0,1000000000000)
-    n=str(n)
-    fig.savefig(os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png'))  
-    full_filename= os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png')                  
+   
     
-    
-    return render_template("step1.html",user_image = full_filename,price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
 
 
    
