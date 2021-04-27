@@ -1,22 +1,24 @@
 
 from flask import Flask,render_template,redirect,request
-import warnings
-warnings.filterwarnings('ignore')
 import pandas as pd
-
 import matplotlib.pyplot as plt
 import numpy as np
 from fbprophet import Prophet
-
 import warnings
 warnings.filterwarnings('ignore')
 from random import randint
 import plotly.graph_objs as go
 import plotly.offline as py
+import plotly.express as px
 from flask_socketio import SocketIO
 import datetime
 from datetime import timedelta, date
 from fbprophet.plot import plot_plotly
+
+
+
+
+
 
 
 def daterange(start_date, end_date):
@@ -35,8 +37,8 @@ for single_date in daterange(start_date, end_date):
 df.to_csv('hkd_data.csv')
 inr_df = df[df['Currency'] == 'INR']
 
-inr_df.pop('Rate')
-inr_df.pop('Change')
+#inr_df.pop('Rate')
+#inr_df.pop('Change')
 inr_df.head(5)
 inr_df = pd.concat([hist_df, inr_df], ignore_index=True)
 
@@ -64,6 +66,13 @@ app.config["IMAGE_UPLOADS"] = "static/img/"
 socketio = SocketIO(app)
 @app.route('/')
 def hello():
+
+
+
+
+
+
+
     fig,ax=plt.subplots(nrows=1, ncols=1)
     ax.plot(inr_df["Date"],inr_df["Units per HKD"], label= 'Units per HKD')
     
@@ -88,19 +97,12 @@ def hello():
 
 @app.route('/submit',methods=['POST'])
 def submit_data():
-    
-        
-    print("entered")
+
     s1=request.form.getlist('options')[0]
     s2=int(request.form['parameter'])
-    print(s1,s2)
 
     df= inr_df.drop(['Currency', 'Name', 'HKD per unit'], axis=1)
-
     df = df.rename(columns={'Units per HKD': 'y', 'Date': 'ds'})
-    #df['ds'] =  pd.to_datetime(df['ds'], format='%d/%m/%Y')
-    df.head(5)
-
 
     # to save a copy of the original data..you'll see why shortly. 
     df['y_orig'] = df['y'] 
@@ -114,8 +116,6 @@ def submit_data():
     forecast_data = model.predict(future_data)
     forecast_data[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(5)
 
-
-
     # make sure we save the original forecast data
     forecast_data_orig = forecast_data 
     forecast_data_orig['yhat'] = np.exp(forecast_data_orig['yhat'])
@@ -125,21 +125,20 @@ def submit_data():
     df['y']=df['y_orig']
     final_df = pd.DataFrame(forecast_data_orig)
 
-
-    '''
     actual_chart = go.Scatter(y=df["y_orig"], name= 'Actual')
     predict_chart = go.Scatter(y=final_df["yhat"], name= 'Predicted')
     predict_chart_upper = go.Scatter(y=final_df["yhat_upper"], name= 'Predicted Upper')
     predict_chart_lower = go.Scatter(y=final_df["yhat_lower"], name= 'Predicted Lower')
-    '''  
-    
+
+    py.plot([actual_chart, predict_chart, predict_chart_upper, predict_chart_lower],filename = '/static/graph/predict_graph.html', auto_open=False)
+
+
     fig,ax=plt.subplots(nrows=1, ncols=1)
     ax.plot(df["y_orig"], label= 'Actual')
     ax.plot(final_df["yhat"], label= 'Predicted')
     ax.plot(final_df["yhat_lower"], label= 'Predicted Lower')
     ax.plot(final_df["yhat_upper"], label= 'Predicted Upper')
     ax.legend()
-
 
     plt.xticks(rotation=90)
 
