@@ -34,6 +34,7 @@ for single_date in daterange(start_date, end_date):
     df = df.append(dfs)  
 df.to_csv('hkd_data.csv')
 inr_df = df[df['Currency'] == 'INR']
+
 inr_df.pop('Rate')
 inr_df.pop('Change')
 inr_df.head(5)
@@ -63,9 +64,21 @@ app.config["IMAGE_UPLOADS"] = "static/img/"
 socketio = SocketIO(app)
 @app.route('/')
 def hello():
+    fig,ax=plt.subplots(nrows=1, ncols=1)
+    ax.plot(inr_df["Date"],inr_df["Units per HKD"], label= 'Units per HKD')
+    
+    ax.legend()
+
+
+    plt.xticks(rotation=90)
+
+    n=randint(0,1000000000000)
+    n=str(n)
+    fig.savefig(os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png'))  
+    full_filename= os.path.join(app.config["IMAGE_UPLOADS"],n+'time_series.png')    
     
     
-    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+    return render_template("step1.html",user_image = full_filename,price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
 
 
 
