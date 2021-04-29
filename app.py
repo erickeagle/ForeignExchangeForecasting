@@ -1,10 +1,13 @@
-
+   
 from flask import Flask,render_template,redirect,request
+from flask.helpers import flash
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from fbprophet import Prophet
 import warnings
+
+from werkzeug import debug
 warnings.filterwarnings('ignore')
 from random import randint
 import plotly.graph_objs as go
@@ -15,7 +18,7 @@ import datetime
 from datetime import timedelta, date
 from fbprophet.plot import plot_plotly
 
-
+from tempfile import TemporaryDirectory
 
 
 
@@ -64,21 +67,26 @@ import os
 app = Flask("__name__")
 app.config["IMAGE_UPLOADS"] = "static/img/"
 app.config["Graph_UPLOADS"] = "static/graph/"
+app.secret_key = "dadbn2e298ynce8y998c@_shlbsjda"
 socketio = SocketIO(app)
 @app.route('/')
-def hello():
+def index():
 
     
     
 
     actual_chart = go.Scatter(y=inr_df["Units per HKD"], x=inr_df["Date"], name= 'Data')
-    py.plot([actual_chart],filename = os.path.join(app.config["Graph_UPLOADS"],'actual_graph.html') , auto_open=False)
+    
 
-
-
+    with TemporaryDirectory() as tmp_dir:
+        filename = tmp_dir + "tmp.html"
+        py.plot([actual_chart],filename = filename , auto_open=False)
+        with open(filename, "r") as f:
+            graph_html = f.read()
 
     
-    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+    IS_FORECAST = False
+    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365, graph_html=graph_html, IS_FORECAST=IS_FORECAST)
 
 
 
@@ -88,9 +96,12 @@ def hello():
 
 @app.route('/submit',methods=['POST'])
 def submit_data():
-
-    s1=request.form.getlist('options')[0]
-    s2=int(request.form['parameter'])
+    try:
+        s2=int(request.form['parameter'])
+        s1=request.form['options']
+    except:
+        flash("Please provide valid inputs")
+        return redirect("/")
 
     df= inr_df.drop(['Currency', 'Name', 'HKD per unit'], axis=1)
     df = df.rename(columns={'Units per HKD': 'y', 'Date': 'ds'})
@@ -121,12 +132,25 @@ def submit_data():
     predict_chart_upper = go.Scatter(y=final_df["yhat_upper"], name= 'Predicted Upper')
     predict_chart_lower = go.Scatter(y=final_df["yhat_lower"], name= 'Predicted Lower')
 
-    py.plot([actual_chart, predict_chart, predict_chart_upper, predict_chart_lower],filename =  os.path.join(app.config["Graph_UPLOADS"],'predict_graph.html'), auto_open=False)
-
-
-   
     
-    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365)
+
+    with TemporaryDirectory() as tmp_dir:
+        filename = tmp_dir + "tmp.html"
+        py.plot([actual_chart, predict_chart, predict_chart_upper, predict_chart_lower],filename = filename, auto_open=False)
+        with open(filename, "r") as f:
+            graph_html = f.read()
+    if s1=="D":
+        value="Days"
+    elif s1=="M":
+        value="Month"
+    else:
+        value="Year"
+    final_df_1=final_df[['ds','yhat']].tail(s2)
+    final_df_1 = final_df_1.rename(columns={'yhat': 'Units Per HKD', 'ds':value})
+    final_df_1.reset_index(drop=True, inplace=True)
+    IS_FORECAST = True
+    
+    return render_template("step1.html",price_day1=price_day1,change_1=change_1,change_7=change_7,change_15=change_15,change_365=change_365, graph_html=graph_html, parameter=s2,tables=[final_df_1.to_html(classes='forecast')], IS_FORECAST = IS_FORECAST)
 
 
    
@@ -134,5 +158,4 @@ def submit_data():
     
 if __name__ =="__main__":
 
-    socketio.run(app)
-    
+    socketio.run(app, debug=True)
