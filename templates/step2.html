@@ -56,7 +56,7 @@
 			padding: 10px;
 			border: 4px solid darkgrey;
 		}
-
+		
 		.stats {
 			border-radius: 15px;
 			background-color: rgb(255, 255, 255);
@@ -96,25 +96,6 @@
 		.loss {
 			color: rgb(151, 29, 29);
 		}
-
-		table.dataframe, {
-  border: none;
-  border-bottom: 1px solid #C8C8C8;
-  border-collapse: collapse;
- 
-  padding: 5px;
-  margin-bottom: 30px;
-  
-}
-.dataframe th, .dataframe td {
-  border: none;
-  border-bottom: 1px solid #C8C8C8;
-  border-collapse: collapse;
-  text-align:left;
-  padding: 5px;
-  margin-bottom: 30px;
-  
-}
 	</style>
 
 </head>
@@ -231,19 +212,12 @@
 
 			<div class="col-lg-9 col-sm-12 col-md-12">
 				<div class="graph-wrap">
-					<h2 class="text-center fw-bolder text-secondary display-5">
-						{% if IS_FORECAST %}
-						Forecasted Data
-						{% else %}
-						Actual Data
-						{% endif %}
-					</h2>
+					<h2 class="text-center fw-bolder text-secondary">Forecast Graph</h2>
 					<br>
 					<br>
 					<div class="embed-responsive embed-responsive-4by3">
 						<iframe class="embed-responsive-item" srcdoc="{{ graph_html }}" id="graph" frameborder="0"
-							height="90%" width="100%">
-						</iframe>
+							height="90%" width="100%"></iframe>
 					</div>
 					<h2 class="text-center fw-bolder text-secondary">Forecasted data</h2>
 					<div style="text-align:center;">
